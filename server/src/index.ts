@@ -24,15 +24,15 @@ const initRedisClient = async () => {
     redisClient = new Redis({
       sentinels: [
         {
-          host: 'YOUR_HOST_IP',
+          host: '192.168.16.1',
           port: 26379
         },
         {
-          host: 'YOUR_HOST_IP',
+          host: '192.168.16.1',
           port: 26380
         },
         {
-          host: 'YOUR_HOST_IP',
+          host: '192.168.16.1',
           port: 26381
         }
       ],

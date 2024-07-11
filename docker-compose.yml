@@ -17,7 +17,7 @@ services:
         "--repl-diskless-load",
         "on-empty-db",
         "--replica-announce-ip",
-        "YOUR_HOST_IP",
+        "192.168.16.1",
         "--replica-announce-port",
         "6379",
       ]
@@ -45,7 +45,7 @@ services:
         "--repl-diskless-load",
         "on-empty-db",
         "--replica-announce-ip",
-        "YOUR_HOST_IP",
+        "192.168.16.1",
         "--replica-announce-port",
         "6380",
       ]
@@ -73,7 +73,7 @@ services:
         "--repl-diskless-load",
         "on-empty-db",
         "--replica-announce-ip",
-        "YOUR_HOST_IP",
+        "192.168.16.1",
         "--replica-announce-port",
         "6381",
       ]
@@ -90,7 +90,7 @@ services:
       - "26379:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-             echo "sentinel monitor mymaster YOUR_HOST_IP 6379 2" >> /etc/sentinel.conf &&
+             echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
              echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
              echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
              echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
@@ -109,7 +109,7 @@ services:
       - "26380:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-             echo "sentinel monitor mymaster YOUR_HOST_IP 6379 2" >> /etc/sentinel.conf &&
+             echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
              echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
              echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
              echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
@@ -128,7 +128,7 @@ services:
       - "26381:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-             echo "sentinel monitor mymaster YOUR_HOST_IP 6379 2" >> /etc/sentinel.conf &&
+             echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
              echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
              echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
              echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&

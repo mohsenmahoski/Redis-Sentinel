@@ -1,2 +1,4 @@
 /data/
 /server/node_modules/
+/nextjs/node_modules/
+/nextjs/.next/
