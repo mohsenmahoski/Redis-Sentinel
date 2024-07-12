@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   redis-master:
-    image: redis:latest
+    image: redis/redis-stack
     container_name: redis-master
     hostname: redis-master
     ports:
@@ -20,12 +20,18 @@ services:
         "192.168.16.1",
         "--replica-announce-port",
         "6379",
+        "--protected-mode",
+        "no",
+        "--loadmodule",
+        "/opt/redis-stack/lib/redisearch.so",
+        "--loadmodule",
+        "/opt/redis-stack/lib/rejson.so",
       ]
     networks:
       - redis-network
 
   redis-slave-1:
-    image: redis:latest
+    image: redis/redis-stack
     container_name: redis-slave-1
     hostname: redis-slave-1
     depends_on:
@@ -48,12 +54,18 @@ services:
         "192.168.16.1",
         "--replica-announce-port",
         "6380",
+        "--protected-mode",
+        "no",
+        "--loadmodule",
+        "/opt/redis-stack/lib/redisearch.so",
+        "--loadmodule",
+        "/opt/redis-stack/lib/rejson.so",
       ]
     networks:
       - redis-network
 
   redis-slave-2:
-    image: redis:latest
+    image: redis/redis-stack
     container_name: redis-slave-2
     hostname: redis-slave-2
     depends_on:
@@ -76,6 +88,12 @@ services:
         "192.168.16.1",
         "--replica-announce-port",
         "6381",
+        "--protected-mode",
+        "no",
+        "--loadmodule",
+        "/opt/redis-stack/lib/redisearch.so",
+        "--loadmodule",
+        "/opt/redis-stack/lib/rejson.so",
       ]
     networks:
       - redis-network
@@ -90,12 +108,12 @@ services:
       - "26379:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-             echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
-             echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
-             echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
-             echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
-             echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
-             redis-sentinel /etc/sentinel.conf'
+            echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
+            echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
+            echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
+            echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
+            redis-sentinel /etc/sentinel.conf'
     networks:
       - redis-network
 
@@ -109,12 +127,12 @@ services:
       - "26380:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-             echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
-             echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
-             echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
-             echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
-             echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
-             redis-sentinel /etc/sentinel.conf'
+            echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
+            echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
+            echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
+            echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
+            redis-sentinel /etc/sentinel.conf'
     networks:
       - redis-network
 
@@ -128,12 +146,12 @@ services:
       - "26381:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-             echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
-             echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
-             echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
-             echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
-             echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
-             redis-sentinel /etc/sentinel.conf'
+            echo "sentinel monitor mymaster 192.168.16.1 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
+            echo "sentinel down-after-milliseconds mymaster 5000" >> /etc/sentinel.conf &&
+            echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
+            echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
+            redis-sentinel /etc/sentinel.conf'
     networks:
       - redis-network
 
