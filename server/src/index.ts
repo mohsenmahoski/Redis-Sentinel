@@ -1,6 +1,5 @@
 import express from 'express';
-import Redis from 'ioredis';
-
+import { createClient } from 'redis';
 
 const app = express();
 
@@ -9,7 +8,7 @@ export let redisClient = null;
 let retries = 0;
 
 const checkRedis = async () => {
-  if (redisClient && redisClient.status === 'ready') {
+  if (redisClient && redisClient.isReady) {
     await redisClient.set("ping", "pong");
     const value = await redisClient.get("ping");
     console.log("value is", value);
@@ -18,10 +17,29 @@ const checkRedis = async () => {
   }
 };
 
+const checkRedisJSON = async () => {
+  try {
+    if (redisClient.isReady) {
+      // Use JSON.SET to store a JSON object
+      await redisClient.json.set('mykey', '.', { foo: 'bar' });
+
+      // Use JSON.GET to retrieve the JSON object
+      const value = await redisClient.json.get('mykey');
+
+      console.log("value is", value);
+    } else {
+      console.log("Redis client is not ready");
+    }
+  } catch (error) {
+    console.log("REDIS JSON ERROR", error);
+  }
+};
+
 const initRedisClient = async () => {
   if (redisClient) return;
   try {
-    redisClient = new Redis({
+    redisClient = createClient({
+      // @ts-ignore
       sentinels: [
         {
           host: '192.168.16.1',
@@ -36,12 +54,11 @@ const initRedisClient = async () => {
           port: 26381
         }
       ],
-      name: 'mymaster',
-      sentinelRetryStrategy: (times) => {
-        const delay = Math.min(times * 1000, 30000); // retry with exponential backoff, up to a maximum of 30 seconds
-        return delay;
-      }
+      name: 'mymaster' // the name of your master group
     });
+    // redisClient = createClient({
+    //   url: 'redis://192.168.16.1:6379'
+    // });
 
     redisClient.on('connect', () => {
       console.log("Redis connected");
@@ -51,6 +68,7 @@ const initRedisClient = async () => {
       try {
         console.log("Redis is ready");
         checkRedis();
+        checkRedisJSON();
       } catch (error) {
         console.log(error);
       }
@@ -64,6 +82,8 @@ const initRedisClient = async () => {
     redisClient.on('error', (err) => {
       console.log(err)
     });
+
+    await redisClient.connect();
 
   } catch (error) {
     console.log(error)
