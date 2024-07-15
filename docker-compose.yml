@@ -123,7 +123,7 @@ services:
       - "26379:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-            echo "sentinel monitor mymaster 172.21.0.3 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel monitor mymaster 172.29.48.1 6379 2" >> /etc/sentinel.conf &&
             echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
             echo "sentinel down-after-milliseconds mymaster 10000" >> /etc/sentinel.conf &&
             echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
@@ -143,7 +143,7 @@ services:
       - "26380:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-            echo "sentinel monitor mymaster 172.21.0.3 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel monitor mymaster 172.29.48.1 6379 2" >> /etc/sentinel.conf &&
             echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
             echo "sentinel down-after-milliseconds mymaster 10000" >> /etc/sentinel.conf &&
             echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
@@ -163,7 +163,7 @@ services:
       - "26381:26379"
     command: >
       sh -c 'echo "bind 0.0.0.0" > /etc/sentinel.conf &&
-            echo "sentinel monitor mymaster 172.21.0.3 6379 2" >> /etc/sentinel.conf &&
+            echo "sentinel monitor mymaster 172.29.48.1 6379 2" >> /etc/sentinel.conf &&
             echo "sentinel resolve-hostnames yes" >> /etc/sentinel.conf &&
             echo "sentinel down-after-milliseconds mymaster 10000" >> /etc/sentinel.conf &&
             echo "sentinel failover-timeout mymaster 10000" >> /etc/sentinel.conf &&
