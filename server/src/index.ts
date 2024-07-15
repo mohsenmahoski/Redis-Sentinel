@@ -1,106 +1,100 @@
 import express from 'express';
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 
 const app = express();
 
-export let redisClient = null;
-
+let redisClient = null;
 let retries = 0;
 
 const checkRedis = async () => {
-  if (redisClient && redisClient.isReady) {
-    await redisClient.set("ping", "pong");
-    const value = await redisClient.get("ping");
-    console.log("value is", value);
-  } else {
-    console.log("Redis client is not ready");
+  try {
+    if (redisClient.status === 'ready') {
+      await redisClient.set('ping', 'pong');
+      const value = await redisClient.get('ping');
+      console.log('value is', value);
+    } else {
+      console.log('Redis client is not ready');
+    }
+  } catch (error) {
+    console.log('REDIS ERROR', error);
   }
 };
 
 const checkRedisJSON = async () => {
   try {
-    if (redisClient.isReady) {
+    if (redisClient.status === 'ready') {
       // Use JSON.SET to store a JSON object
-      await redisClient.json.set('mykey', '.', { foo: 'bar' });
+      await redisClient.call('JSON.SET', 'mykey', '.', JSON.stringify({ foo: 'bar' }));
 
       // Use JSON.GET to retrieve the JSON object
-      const value = await redisClient.json.get('mykey');
-
-      console.log("value is", value);
+      const value = await redisClient.call('JSON.GET', 'mykey');
+      console.log('value is', JSON.parse(value));
     } else {
-      console.log("Redis client is not ready");
+      console.log('Redis client is not ready');
     }
   } catch (error) {
-    console.log("REDIS JSON ERROR", error);
+    console.log('REDIS JSON ERROR', error);
   }
 };
 
 const initRedisClient = async () => {
   if (redisClient) return;
   try {
-    redisClient = createClient({
-      // @ts-ignore
+    redisClient = new Redis({
       sentinels: [
-        {
-          host: '192.168.16.1',
-          port: 26379
-        },
-        {
-          host: '192.168.16.1',
-          port: 26380
-        },
-        {
-          host: '192.168.16.1',
-          port: 26381
-        }
+        { host: '172.29.48.1', port: 26379 },
+        { host: '172.29.48.1', port: 26380 },
+        { host: '172.29.48.1', port: 26381 }
       ],
-      name: 'mymaster' // the name of your master group
+      name: 'mymaster',
+      sentinelRetryStrategy: (times) => Math.min(times * 1000, 60000),
+      reconnectOnError: (err) => {
+        const targetError = 'READONLY';
+        if (err.message.includes(targetError)) {
+          // Only reconnect when the error contains "READONLY"
+          return true;
+        }
+      },
     });
-    // redisClient = createClient({
-    //   url: 'redis://192.168.16.1:6379'
-    // });
 
     redisClient.on('connect', () => {
-      console.log("Redis connected");
+      console.log('Redis connected');
     });
 
     redisClient.on('ready', async () => {
       try {
-        console.log("Redis is ready");
-        checkRedis();
-        checkRedisJSON();
+        console.log('Redis is ready');
+        await checkRedis();
+        await checkRedisJSON();
       } catch (error) {
         console.log(error);
       }
     });
 
     redisClient.on('reconnecting', () => {
-      ++retries;
-      console.log('Redis reconnecting')
+      console.log('Redis reconnecting');
     });
 
     redisClient.on('error', (err) => {
-      console.log(err)
+      console.log(err);
     });
 
-    await redisClient.connect();
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
     redisClient = null;
   }
 };
 
 const start = () => {
   app.listen(5000, '0.0.0.0', async function () {
-    console.log("APP STARTED ON PORT 5000");
+    console.log('APP STARTED ON PORT 5000');
     await initRedisClient();
   });
 };
 
 process.on('exit', (code) => {
   const log = {
-    type: "EXIT",
+    type: 'EXIT',
     error: JSON.stringify(code)
   };
   console.log(log);
@@ -108,18 +102,16 @@ process.on('exit', (code) => {
 
 process.on('uncaughtException', (error) => {
   const log = {
-    type: "UNCAUGHT-EXCEPTION",
+    type: 'UNCAUGHT-EXCEPTION',
     error: JSON.stringify(error)
   };
   console.log(log);
-  // It's recommended to exit the process after logging the uncaught exception
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  // It's recommended to exit the process after logging the unhandled rejection
   const log = {
-    type: "UNHANDLE-REJECTION",
+    type: 'UNHANDLE-REJECTION',
     error: JSON.stringify(reason)
   };
   console.log(log);
