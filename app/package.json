@@ -1,0 +1,51 @@
+{
+  "name": "dms-api",
+  "version": "0.2.18",
+  "description": "DMS backend API",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write --single-quote \"src/**/*.ts\"",
+    "prebuild": "rimraf dist",
+    "build": "tsc",
+    "clean": "rm -rf node_modules && rm -rf dist",
+    "clean:win": "del /A /F /Q /S node_modules && del /A /F /Q /S dist",
+    "reinstall": "npm run clean && npm install",
+    "reinstall:win": "npm run clean:win && npm install",
+    "rebuild": "npm run clean && npm install && npm run build",
+    "rebuild:win": "npm run clean:win && npm install && npm run build",
+    "dev:build": "tsc -w",
+    "dev:run": "nodemon dist/index.js",
+    "dev": "concurrently npm:dev:*",
+    "local": "cls && SET \"NODE_ENV=local\" && concurrently npm:dev:*",
+    "local:win": "cls && SET \"NODE_ENV=local\" && concurrently npm:dev:*",
+    "start:dev": "npm run build && NODE_ENV=development node dist/index.js",
+    "start:prod": "npm run build && NODE_ENV=production node dist/index.js",
+    "start": "NODE_ENV=local ts-node-dev --inspect -- src/index.ts",
+    "start:prod_dev": "NODE_ENV=production ts-node-dev --inspect -- src/index.ts",
+    "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config ./src/ormconfig.ts",
+    "migration": "NODE_ENV=develop npm run typeorm -- migration:generate -n",
+    "migrate": "NODE_ENV=develop npm run typeorm -- migration:run"
+  },
+  "keywords": [
+    "DMS"
+  ],
+  "author": "Fanap Team",
+  "license": "MIT",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.17.1",
+    "ioredis": "^5.4.1",
+    "redis": "^4.6.15"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
+    "@types/node": "^14.11.8",
+    "eslint": "^7.20.0",
+    "nodemon": "^2.0.4",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.0.5"
+  }
+}
