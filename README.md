@@ -6,6 +6,7 @@ This project is a Node.js application that connects to a Redis Sentinel cluster.
 4* in server directory run npm start.<br/>
 5\_ in terminal you should see "Redis is ready" and "value is pong"
 
+docker-compose --env-file .env up
 docker exec -it sentinel-1 redis-cli -p 26379 sentinel slaves mymaster
 docker exec -it sentinel-1 redis-cli -p 26379 sentinel masters
 docker exec -it redis-master redis-cli INFO replication
