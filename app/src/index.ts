@@ -1,7 +1,8 @@
 import 'dotenv/config';
-import express from 'express';
 
 import Redis from 'ioredis';
+import express from 'express';
+import { faker } from '@faker-js/faker';
 
 const app = express();
 
@@ -85,6 +86,16 @@ const initRedisClient = async () => {
     redisClient = null;
   }
 };
+app.use("/", (req, res) => {
+   const user = {
+     username : faker.person.fullName(),
+     job: faker.person.jobTitle(),
+     bio: faker.person.bio(),
+   }
+   return res.status(200).json({
+      ...user
+   });
+});
 
 const start = () => {
   app.listen(5000, '0.0.0.0', async function () {

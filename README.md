@@ -19,3 +19,10 @@ docker exec -it sentinel-2 redis-cli -p 26379 sentinel get-master-addr-by-name m
 
 https://hub.docker.com/r/redis/redisinsight
 docker run -d --name redisinsight -p 5540:5540 redis/redisinsight:latest
+
+# load JSON and search module
+
+        "--loadmodule",
+        "/opt/redis-stack/lib/redisearch.so",
+        "--loadmodule",
+        "/opt/redis-stack/lib/rejson.so",
