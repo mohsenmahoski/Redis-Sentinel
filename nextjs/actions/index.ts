@@ -6,6 +6,6 @@ export async function revalidateByTagAction(tag: string) {
   revalidateTag(tag)
 }
 
-export async function revalidateByPath(path: string) {
+export async function revalidateByPathAction(path: string) {
   revalidatePath(path)
 }

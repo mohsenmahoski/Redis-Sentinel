@@ -1,7 +1,7 @@
 import { CacheHandler } from '@neshca/cache-handler';
+import { createClient } from 'redis';
 import createLruHandler from '@neshca/cache-handler/local-lru';
 import createRedisHandler from '@neshca/cache-handler/redis-stack';
-import { createClient } from 'redis';
 
 CacheHandler.onCreation(async () => {
   let client;
@@ -9,21 +9,7 @@ CacheHandler.onCreation(async () => {
   try {
     // Create a Redis client.
     client = createClient({
-      sentinels: [
-        {
-          host: '192.168.16.1',
-          port: 26379
-        },
-        {
-          host: '192.168.16.1',
-          port: 26380
-        },
-        {
-          host: '192.168.16.1',
-          port: 26381
-        }
-      ],
-      name: 'mymaster' // the name of your master group
+      url: 'redis://172.25.240.1:6379'
     });
 
     // Redis won't work without error handling.
@@ -64,7 +50,7 @@ CacheHandler.onCreation(async () => {
     // Create the `redis-stack` Handler if the client is available and connected.
     handler = await createRedisHandler({
       client,
-      keyPrefix: 'prefix:',
+      keyPrefix: 'sample_prefix:',
       timeoutMs: 1000,
     });
   } else {

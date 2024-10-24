@@ -25,17 +25,25 @@ const checkRedis = async () => {
 const checkRedisJSON = async () => {
   try {
     if (redisClient.status === 'ready') {
-      // Use JSON.SET to store a JSON object
-      await redisClient.call('JSON.SET', 'mykey', '.', JSON.stringify({ foo: 'bar' }));
-
-      // Use JSON.GET to retrieve the JSON object
-      const value = await redisClient.call('JSON.GET', 'mykey');
-      console.log('value is', JSON.parse(value));
+      // Redis#call() can be used to call arbitrary Redis commands.
+      // The first parameter is the command name, the rest are arguments.
+      await redisClient.call("JSON.SET", "doc", "$", '{"f1": {"a":1}, "f2":{"a":2}}');
+      const json = await redisClient.call("JSON.GET", "doc", "$..f1");
+      console.log(json); // [{"a":1}]
     } else {
       console.log('Redis client is not ready');
     }
   } catch (error) {
     console.log('REDIS JSON ERROR', error);
+  }
+};
+
+const checkRedisModules = async () => {
+  try {
+    const modules = await redisClient.call('MODULE', 'LIST');
+    console.log('Loaded modules:', modules);
+  } catch (error) {
+    console.log('Error checking modules:', error);
   }
 };
 
@@ -66,6 +74,7 @@ const initRedisClient = async () => {
     redisClient.on('ready', async () => {
       try {
         console.log('Redis is ready');
+        await checkRedisModules(); // Check loaded modules
         await checkRedis();
         await checkRedisJSON();
       } catch (error) {
@@ -93,7 +102,7 @@ app.use("/", (req, res) => {
      bio: faker.person.bio(),
    }
    return res.status(200).json({
-      ...user
+    ...user
    });
 });
 
@@ -103,31 +112,5 @@ const start = () => {
     await initRedisClient();
   });
 };
-
-process.on('exit', (code) => {
-  const log = {
-    type: 'EXIT',
-    error: JSON.stringify(code)
-  };
-  console.log(log);
-});
-
-process.on('uncaughtException', (error) => {
-  const log = {
-    type: 'UNCAUGHT-EXCEPTION',
-    error: JSON.stringify(error)
-  };
-  console.log(log);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  const log = {
-    type: 'UNHANDLE-REJECTION',
-    error: JSON.stringify(reason)
-  };
-  console.log(log);
-  process.exit(1);
-});
 
 start();

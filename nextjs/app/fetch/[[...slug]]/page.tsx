@@ -6,9 +6,11 @@ declare interface IUser {
   job: string;
   bio: string;
 }
-
-export default async function SsrPage() {
-  const response = await fetch("http://localhost:5000", {
+export const generateStaticParams = async () => {
+  return [];
+};
+export default async function FetchPage() {
+  const response = await fetch("http://172.25.240.1:5000", {
     next: { tags: [tag] },
   });
   const user = (await response.json()) as IUser;

@@ -1,13 +1,13 @@
 "use client"
 
-import { revalidateByPath } from "@/actions";
+import { revalidateByPathAction } from "@/actions";
 
 interface IProps {
   path: string;
 }
 const RevalidatePathButton = ({ path }: IProps) => {
   const handeRevalidate = async () => {
-    revalidateByPath(path);
+    revalidateByPathAction(path);
   }
   return (
     <button className="bg-green-500 p-5" onClick={handeRevalidate}>REVALIDATE</button>
